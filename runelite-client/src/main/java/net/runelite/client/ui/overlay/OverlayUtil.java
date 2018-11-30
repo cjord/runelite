@@ -70,7 +70,7 @@ public class OverlayUtil
 
 	public static void renderTextLocation(Graphics2D graphics, Point txtLoc, String text, Color color)
 	{
-		if (Strings.isNullOrEmpty(text))
+		if (Strings.isNullOrEmpty(text) || txtLoc == null)
 		{
 			return;
 		}
