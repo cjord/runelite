@@ -34,8 +34,8 @@ public interface TimersConfig extends Config
 	@ConfigItem(
 			keyName = "showTimerOverlay",
 			name = "Display overlay",
-			description = "Configures whether timers are shown ontop of players",
-			position = 1
+			description = "Configures whether timers are shown on-top of players",
+			position = 0
 	)
 	default boolean showTimerOverlay()
 	{

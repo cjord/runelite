@@ -30,23 +30,13 @@ import com.google.inject.Provides;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.time.Duration;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.Point;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.AnimationChanged;
-import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.ConfigChanged;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.GraphicChanged;
-import net.runelite.api.events.ItemContainerChanged;
-import net.runelite.api.events.LocalPlayerDeath;
-import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.events.NpcDespawned;
-import net.runelite.api.events.VarbitChanged;
-import net.runelite.api.events.WidgetHiddenChanged;
+import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import static net.runelite.api.widgets.WidgetInfo.PVP_WORLD_SAFE_ZONE;
@@ -634,107 +624,87 @@ public class TimersPlugin extends Plugin
 	@Subscribe
 	public void onGraphicChanged(GraphicChanged event)
 	{
-		Actor actor = event.getActor();
-
-		/*
-		if (actor != client.getLocalPlayer())
+		if (event.getActor() instanceof Player)
 		{
-			return;
-		}
-		*/
+			Player player = (Player) event.getActor();
 
-		if (config.showImbuedHeart() && actor.getGraphic() == IMBUEDHEART.getGraphicId())
-		{
-			createGameTimerOverlay(IMBUEDHEART, actor);
-		}
-
-		if (config.showVengeance() && actor.getGraphic() == VENGEANCE.getGraphicId())
-		{
-			createGameTimerOverlay(VENGEANCE, actor);
-		}
-
-		if (actor.getGraphic() == 345) //TELEBLOCK CONTACT GRAPHIC ID - TELEBLOCK.getGraphicId()
-		{
-			Player p = (Player) actor;
-			if (p.getOverheadIcon() == HeadIcon.MAGIC)
-			{
-				if (client.getWorldType().contains(WorldType.SEASONAL_DEADMAN))
-					createGameTimerOverlay(DMM_HALFTB, actor);
-				else
-					createGameTimerOverlay(HALFTB, actor);
+			if (config.showImbuedHeart() && player.getGraphic() == IMBUEDHEART.getGraphicId()) {
+				//createGameTimerOverlay(IMBUEDHEART, actor, false);
 			}
-			else
-			{
-				if (client.getWorldType().contains(WorldType.SEASONAL_DEADMAN))
-					createGameTimerOverlay(DMM_FULLTB, actor);
-				else
-					createGameTimerOverlay(FULLTB, actor);
-			}
-		}
 
-		if (config.showFreezes())
-		{
-			if (actor.getGraphic() == BIND.getGraphicId())
+			if (config.showVengeance() && player.getGraphic() == VENGEANCE.getGraphicId())
 			{
-				if (client.isPrayerActive(Prayer.PROTECT_FROM_MAGIC)
-					&& !client.getWorldType().contains(WorldType.SEASONAL_DEADMAN))
-				{
-					createGameTimerOverlay(HALFBIND, actor);
-				}
-				else
-				{
-					createGameTimerOverlay(BIND, actor); //updated
+				createGameTimerOverlay(VENGEANCE, player);
+			}
+
+			if (player.getGraphic() == 345) //TELEBLOCK CONTACT GRAPHIC ID - TELEBLOCK.getGraphicId()
+			{
+				removeGameTimerOverlay(player, SpriteID.SPELL_TELE_BLOCK);
+				if (player.getOverheadIcon() == HeadIcon.MAGIC) {
+					if (client.getWorldType().contains(WorldType.SEASONAL_DEADMAN))
+						createGameTimerOverlay(DMM_HALFTB, player);
+					else
+						createGameTimerOverlay(HALFTB, player);
+				} else {
+					if (client.getWorldType().contains(WorldType.SEASONAL_DEADMAN))
+						createGameTimerOverlay(DMM_FULLTB, player);
+					else
+						createGameTimerOverlay(FULLTB, player);
 				}
 			}
 
-			if (actor.getGraphic() == SNARE.getGraphicId())
+			if (config.showFreezes())
 			{
-				if (client.isPrayerActive(Prayer.PROTECT_FROM_MAGIC)
-					&& !client.getWorldType().contains(WorldType.SEASONAL_DEADMAN))
-				{
-					createGameTimerOverlay(HALFSNARE, actor);
-				}
-				else
-				{
-					createGameTimerOverlay(SNARE, actor);
-				}
-			}
-
-			if (actor.getGraphic() == ENTANGLE.getGraphicId())
-			{
-				if (client.isPrayerActive(Prayer.PROTECT_FROM_MAGIC)
-					&& !client.getWorldType().contains(WorldType.SEASONAL_DEADMAN))
-				{
-					createGameTimerOverlay(HALFENTANGLE, actor);
-				}
-				else
-				{
-					createGameTimerOverlay(ENTANGLE, actor);
-				}
-			}
-
-			// downgrade freeze based on graphic, if at the same tick as the freeze message
-			if (freezeTime == client.getTickCount())
-			{
-				if (actor.getGraphic() == ICERUSH.getGraphicId())
-				{
-					if (actor == client.getLocalPlayer())
-						removeGameTimer(ICEBARRAGE);
-					freezeTimer = createGameTimerOverlay(ICERUSH, actor);
+				if (player.getGraphic() == BIND.getGraphicId()) {
+					if (player.getOverheadIcon() == HeadIcon.MAGIC
+							&& !client.getWorldType().contains(WorldType.SEASONAL_DEADMAN)) {
+						createGameTimerOverlay(HALFBIND, player, true, player.getWorldLocation());
+					} else {
+						createGameTimerOverlay(BIND, player, true, player.getWorldLocation()); //updated
+					}
 				}
 
-				if (actor.getGraphic() == ICEBURST.getGraphicId())
-				{
-					if (actor == client.getLocalPlayer())
-						removeGameTimer(ICEBARRAGE);
-					freezeTimer = createGameTimerOverlay(ICEBURST, actor);
+				if (player.getGraphic() == SNARE.getGraphicId()) {
+					if (player.getOverheadIcon() == HeadIcon.MAGIC
+							&& !client.getWorldType().contains(WorldType.SEASONAL_DEADMAN)) {
+						createGameTimerOverlay(HALFSNARE, player, true, player.getWorldLocation());
+					} else {
+						createGameTimerOverlay(SNARE, player, true, player.getWorldLocation());
+					}
 				}
 
-				if (actor.getGraphic() == ICEBLITZ.getGraphicId())
-				{
-					if (actor == client.getLocalPlayer())
-						removeGameTimer(ICEBARRAGE);
-					freezeTimer = createGameTimerOverlay(ICEBLITZ, actor);
+				if (player.getGraphic() == ENTANGLE.getGraphicId()) {
+					if (player.getOverheadIcon() == HeadIcon.MAGIC
+							&& !client.getWorldType().contains(WorldType.SEASONAL_DEADMAN)) {
+						createGameTimerOverlay(HALFENTANGLE, player, true, player.getWorldLocation());
+					} else {
+						createGameTimerOverlay(ENTANGLE, player, true, player.getWorldLocation());
+					}
+				}
+
+				// downgrade freeze based on graphic, if at the same tick as the freeze message
+				if (timerOverlay.isUnfrozen(player)) {
+					if (player.getGraphic() == ICERUSH.getGraphicId()) {
+						if (player == client.getLocalPlayer())
+							removeGameTimer(ICEBARRAGE);
+						createGameTimerOverlay(ICERUSH, player, true, player.getWorldLocation());
+					}
+					if (player.getGraphic() == ICEBURST.getGraphicId()) {
+						if (player == client.getLocalPlayer())
+							removeGameTimer(ICEBARRAGE);
+						createGameTimerOverlay(ICEBURST, player, true, player.getWorldLocation());
+					}
+					if (player.getGraphic() == ICEBLITZ.getGraphicId()) {
+						if (player == client.getLocalPlayer())
+							removeGameTimer(ICEBARRAGE);
+						createGameTimerOverlay(ICEBLITZ, player, true, player.getWorldLocation());
+					}
+					if (player.getGraphic() == ICEBARRAGE.getGraphicId()) //needs more testing
+					{
+						if (player == client.getLocalPlayer())
+							removeGameTimer(ICEBARRAGE);
+						createGameTimerOverlay(ICEBARRAGE, player, true, player.getWorldLocation());
+					}
 				}
 			}
 		}
@@ -782,6 +752,12 @@ public class TimersPlugin extends Plugin
 	}
 
 	@Subscribe
+	public void onPlayerDespawned(PlayerDespawned event)
+	{
+		timerOverlay.processPlayerDespawn(event.getPlayer());
+	}
+
+	@Subscribe
 	public void onNpcDespawned(NpcDespawned npcDespawned)
 	{
 		NPC npc = npcDespawned.getNpc();
@@ -805,18 +781,27 @@ public class TimersPlugin extends Plugin
 		infoBoxManager.removeIf(t -> t instanceof TimerTimer && ((TimerTimer) t).getTimer().isRemovedOnDeath());
 	}
 
-	private TimerTimer createGameTimerOverlay(final GameTimer timer, Actor actor) // FOR OTHER PLAYERS
+	private FreezeTimer createGameTimerOverlay(final GameTimer timer, Actor actor) // FOR OTHER PLAYERS
 	{
 		BufferedImage image = timer.getImage(itemManager, spriteManager);
-		TimerTimer t = new TimerTimer(timer, this, image);
+		FreezeTimer t = new FreezeTimer(timer, this, image, false, null);
 
 		timerOverlay.add(actor, t); //other players??
 		return t;
 	}
 
-	private boolean removeGameTimerOverlay(final TimerTimer timer, Actor actor)
+	private FreezeTimer createGameTimerOverlay(final GameTimer timer, Actor actor, boolean freeze, WorldPoint freezeLoc) // FOR OTHER PLAYERS
 	{
-		return timerOverlay.remove(actor, timer);
+		BufferedImage image = timer.getImage(itemManager, spriteManager);
+		FreezeTimer t = new FreezeTimer(timer, this, image, freeze, freezeLoc);
+
+		timerOverlay.add(actor, t); //other players??
+		return t;
+	}
+
+	private boolean removeGameTimerOverlay(Actor actor, int spriteId)
+	{
+		return timerOverlay.removePlayerEffect(actor, spriteId);
 	}
 
 	private TimerTimer createGameTimer(final GameTimer timer)
