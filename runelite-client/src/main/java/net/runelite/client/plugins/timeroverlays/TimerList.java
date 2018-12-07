@@ -1,12 +1,8 @@
-package net.runelite.client.plugins.timers;
+package net.runelite.client.plugins.timeroverlays;
 
 import net.runelite.api.Actor;
-import net.runelite.api.Player;
-import net.runelite.client.ui.overlay.infobox.Timer;
 
 import javax.inject.Singleton;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -26,15 +22,6 @@ public class TimerList
     {
         return playerEffects;
     }
-
-    @Override
-    public String toString()
-    {
-        return "";
-    }
-
-    //todo can save player position when frozen, if they move then refresh the timer
-    //todo don't add timer for a player if they are already frozen (barrage on entangled player)
 
     public boolean isUnfrozen(Actor actor)
     {
@@ -86,7 +73,7 @@ public class TimerList
             tl.add(t);
             playerEffects.putIfAbsent(actor, tl);
         }
-        System.out.println("Added: "+actor.getName() + " -> " + playerEffects.get(actor).toString());
+        //System.out.println("Added: "+actor.getName() + " -> " + playerEffects.get(actor).toString()); //debug
     }
 
     public void removeAllFreezeEffects(Actor actor)
@@ -125,12 +112,12 @@ public class TimerList
         return false;
     }
 
-    public boolean removeAllPlayerEffects(Actor actor)
+    public boolean removeAllEffects(Actor actor)
     {
         if (playerEffects.containsKey(actor))
         {
             playerEffects.remove(actor);
-            System.out.println("Removed all effects for: " + actor.getName());
+            //System.out.println("Removed all effects for: " + actor.getName()); //debug
             return true;
         }
         return false;

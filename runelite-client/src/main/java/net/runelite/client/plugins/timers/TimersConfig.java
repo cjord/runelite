@@ -32,17 +32,6 @@ import net.runelite.client.config.ConfigItem;
 public interface TimersConfig extends Config
 {
 	@ConfigItem(
-			keyName = "showTimerOverlay",
-			name = "Display overlay",
-			description = "Configures whether timers are shown on-top of players",
-			position = 0
-	)
-	default boolean showTimerOverlay()
-	{
-		return true;
-	}
-
-	@ConfigItem(
 		keyName = "showHomeMinigameTeleports",
 		name = "Teleport cooldown timers",
 		description = "Configures whether timers for home and minigame teleport cooldowns are displayed"

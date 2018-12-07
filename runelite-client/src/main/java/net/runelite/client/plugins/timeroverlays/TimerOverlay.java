@@ -1,12 +1,9 @@
-package net.runelite.client.plugins.timers;
+package net.runelite.client.plugins.timeroverlays;
 
 import com.google.common.eventbus.Subscribe;
-import net.runelite.api.Actor;
-import net.runelite.api.Client;
-import net.runelite.api.Player;
+import net.runelite.api.*;
 import net.runelite.api.Point;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.PlayerDespawned;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
@@ -27,10 +24,10 @@ public class TimerOverlay extends Overlay
 {
     private final Client client;
     private final TimerList timerList;
-    private final TimersConfig config;
+    private final TimerOverlayConfig config;
 
     @Inject
-    private TimerOverlay(Client client, TimerList timerList, TimersConfig timerConfig)
+    private TimerOverlay(Client client, TimerList timerList, TimerOverlayConfig timerConfig)
     {
         this.client = client;
         this.timerList = timerList;
@@ -42,9 +39,6 @@ public class TimerOverlay extends Overlay
     @Override
     public Dimension render(Graphics2D graphics)
     {
-        if (!config.showTimerOverlay())
-            return null;
-
         Map<Actor, List<FreezeTimer>> effectsMap = timerList.getEffectsMap();
         Iterator<Map.Entry<Actor, List<FreezeTimer>>> entryIterator = effectsMap.entrySet().iterator();
 
@@ -77,7 +71,13 @@ public class TimerOverlay extends Overlay
     @Subscribe
     public void processPlayerDespawn(Player player)
     {
-        timerList.removeAllPlayerEffects(player);
+        timerList.removeAllEffects(player);
+    }
+
+    @Subscribe
+    public void processNPCDespawn(NPC npc)
+    {
+        timerList.removeAllEffects(npc);
     }
 
     public void add(Actor actor, FreezeTimer t)
@@ -108,8 +108,10 @@ public class TimerOverlay extends Overlay
         {
             int width = image.getWidth();
             int textHeight = graphics.getFontMetrics().getHeight() - graphics.getFontMetrics().getMaxDescent();
-            Point imageLocation = new Point(textLocation.getX() - width / 2 - 1, textLocation.getY() - textHeight / 2 - image.getHeight() / 2 -  20 * textOffset); //nullpointer here
-            OverlayUtil.renderImageLocation(graphics, imageLocation, image);
+            Point imageLocation = new Point(textLocation.getX() - width / 2 - 1, textLocation.getY() - textHeight / 2 - image.getHeight() / 2 -  20 * textOffset); //fixed a nullptr here
+
+            if (config.showSprites())
+                OverlayUtil.renderImageLocation(graphics, imageLocation, image);
 
             // move text
             textLocation = new Point(textLocation.getX() + width / 2, textLocation.getY() -  20 * textOffset);

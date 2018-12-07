@@ -1,11 +1,10 @@
-package net.runelite.client.plugins.timers;
+package net.runelite.client.plugins.timeroverlays;
 
 import java.awt.image.BufferedImage;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import lombok.Setter;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.plugins.Plugin;
 import lombok.Getter;
