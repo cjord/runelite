@@ -3,6 +3,8 @@ package net.runelite.client.plugins.pvpattackableindicators;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
+import net.runelite.api.WorldType;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.plugins.playerindicators.PlayerIndicatorsConfig;
 
 import javax.inject.Inject;
@@ -27,15 +29,21 @@ public class AttackIndicatorsService
         final Player localPlayer = client.getLocalPlayer();
         int localCombatLv = localPlayer.getCombatLevel();
         int otherCombatLv = actor.getCombatLevel();
-        int wildernessLv = Math.min(getWildernessLevel(localPlayer), getWildernessLevel(actor));
+        int wildernessLv = Math.min(getWildernessLevel(localPlayer), getWildernessLevel(actor)); //minimum wildy level for both players
         int combatDifference;
+
+        if (WorldType.isPvpWorld(client.getWorldType()))
+            wildernessLv += 15;
+
         if (localCombatLv > otherCombatLv)
         {
             combatDifference = localCombatLv - otherCombatLv;
         }
-        else {
+        else
+        {
             combatDifference = otherCombatLv - localCombatLv;
         }
+
         if (combatDifference <= wildernessLv)
             return Color.GREEN; //attackable
         else if (combatDifference <= wildernessLv + 2)
@@ -47,9 +55,10 @@ public class AttackIndicatorsService
     }
 
 
-    public int getWildernessLevel(Actor actor)
+    public int getWildernessLevel(Actor actor) // coordinates below are the coords of the wilderness in the OVERWORLD
     {
-        if (actor.getWorldLocation().getY() < 3525)
+        WorldPoint position = actor.getWorldLocation();
+        if (position.getY() < 3525 || position.getY() > 4100 || position.getX() < 2942 || position.getX() > 3400)
             return 0;
         return (actor.getWorldLocation().getY() - 3520) / 8 + 1;
     }
@@ -63,19 +72,26 @@ public class AttackIndicatorsService
             if (player == null)
                 continue;
 
-
-            if (player == localPlayer)
+            if (config.displayOnlyNearWild() && getWildernessLevel(player) == 0)
             {
-                if (config.displayOwnCombat())
+                if (WorldType.isPvpWorld(client.getWorldType()))
                 {
-                    consumer.accept(player);
+                    if (player == localPlayer)
+                    {
+                        if (config.displayOwnCombat())
+                            consumer.accept(player);
+                    }
+                    else
+                    {
+                        consumer.accept(player);
+                    }
                 }
             }
             else
             {
-                if (config.displayOnlyNearWild())
+                if (player == localPlayer)
                 {
-                    if (player.getWorldLocation().getY() > 3520)
+                    if (config.displayOwnCombat())
                         consumer.accept(player);
                 }
                 else
@@ -83,7 +99,6 @@ public class AttackIndicatorsService
                     consumer.accept(player);
                 }
             }
-
         }
     }
 }

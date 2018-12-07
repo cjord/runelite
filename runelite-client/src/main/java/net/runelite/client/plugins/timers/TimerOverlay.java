@@ -74,6 +74,7 @@ public class TimerOverlay extends Overlay
         return null;
     }
 
+    @Subscribe
     public void processPlayerDespawn(Player player)
     {
         timerList.removeAllPlayerEffects(player);

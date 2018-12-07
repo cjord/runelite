@@ -27,13 +27,10 @@ package net.runelite.client.plugins.timers;
 
 import com.google.inject.Provides;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.time.Duration;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
-import net.runelite.api.Point;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
@@ -46,10 +43,11 @@ import net.runelite.client.game.SpriteManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import static net.runelite.client.plugins.timers.GameTimer.*;
+import net.runelite.api.events.NpcDespawned;
+import net.runelite.api.events.PlayerDespawned;
 
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
-import net.runelite.client.ui.overlay.infobox.Timer;
 
 @PluginDescriptor(
 	name = "Timers",

@@ -24,6 +24,8 @@
  */
 package net.runelite.client.plugins.pvpattackableindicators;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -46,9 +48,16 @@ public interface AttackIndicatorsConfig extends Config
     @ConfigItem(
             keyName = "displayOnlyNearWild",
             name = "Display only near wilderness",
-            description = "Should levels be displayed only near the wilderness (except in pvp worlds)"
+            description = "Should levels be displayed only near the wilderness (EXCEPT IN in PVP worlds)"
     )
     default boolean displayOnlyNearWild() { return false; }
+
+    @ConfigItem(
+            keyName = "hideUnattackable",
+            name = "Hide unattackable",
+            description = "Hide all players that are not attackable"
+    )
+    default boolean hideUnattackable() { return false; }
 
     @ConfigItem(
             keyName = "levelHeight",
@@ -57,6 +66,31 @@ public interface AttackIndicatorsConfig extends Config
     )
     default int levelHeight() { return 40; }
 
+    @ConfigItem(
+            keyName = "displayMode",
+            name = "Display Mode",
+            description = "What should be displayed for each player"
+    )
+    default DisplayMode displayMode() { return DisplayMode.LEVEL_ONLY; }
+
     //todo customizable color and level ranges
     //todo change color or text of all players attacking or are in combat with local player
+    //todo further integration with playerindicators plugin,
+
+    @Getter
+    @RequiredArgsConstructor
+    enum DisplayMode
+    {
+        LEVEL_ONLY("Levels only"),
+        NAME_AND_LEVEL("Names and levels"),
+        NAME_ONLY("Names only");
+
+        private final String name;
+
+        @Override
+        public String toString()
+        {
+            return name;
+        }
+    }
 }
