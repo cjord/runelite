@@ -75,7 +75,7 @@ public interface AttackIndicatorsConfig extends Config
 
     //todo customizable color and level ranges
     //todo change color or text of all players attacking or are in combat with local player
-    //todo further integration with playerindicators plugin,
+    //todo further integration with playerindicators plugin, friends and clan mates
 
     @Getter
     @RequiredArgsConstructor
