@@ -90,10 +90,6 @@ public class TimerOverlay extends Overlay
         return timerList.removePlayerEffect(actor, spriteId);
     }
 
-    public Duration getMaxRemainingFreezeTime(Actor actor) {
-        return timerList.getMaxRemainingFreezeTime(actor);
-    }
-
     public boolean isUnfrozen(Actor actor) { return timerList.isUnfrozen(actor); }
 
     public void renderTimerOverlay(Graphics2D graphics, Actor actor, Timer timer, int textOffset) //graphics.getFontMetrics().stringWidth(timeText);
