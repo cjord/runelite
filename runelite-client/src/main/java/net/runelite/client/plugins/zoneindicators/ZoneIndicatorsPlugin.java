@@ -23,7 +23,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package net.runelite.client.plugins.zoneindicators;
-import com.google.common.eventbus.Subscribe;
 import com.google.inject.Provides;
 import java.awt.Rectangle;
 import java.awt.geom.GeneralPath;
@@ -48,6 +47,7 @@ import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.ui.overlay.OverlayManager;
 @PluginDescriptor(
         name = "Zone Indicators",
@@ -58,30 +58,62 @@ public class ZoneIndicatorsPlugin extends Plugin
 {
     @Inject
     private Client client;
+
     @Inject
     private ClientThread clientThread;
+
     @Inject
     private ZoneIndicatorsConfig config;
+
     @Inject
     private ZoneIndicatorsOverlay overlay;
+
     @Inject
     private ZoneIndicatorsMinimapOverlay minimapOverlay;
+
     @Inject
     private OverlayManager overlayManager;
+
     @Getter
     private GeneralPath[] multicombatPathToDisplay;
+
     @Getter
     private GeneralPath[] pvpPathToDisplay;
+
     @Getter
     private boolean inPvp;
+
     @Getter
     private boolean inDeadman;
     private int currentPlane;
+
     @Provides
     ZoneIndicatorsConfig getConfig(ConfigManager configManager)
     {
         return configManager.getConfig(ZoneIndicatorsConfig.class);
     }
+
+    @Subscribe
+    public void onConfigChanged(ConfigChanged event)
+    {
+        if (event.getKey().equals("collisionDetection") ||
+                event.getKey().equals("multicombatZoneVisibility") ||
+                event.getKey().equals("deadmanSafeZones") ||
+                event.getKey().equals("pvpSafeZones"))
+        {
+            findLinesInScene();
+        }
+    }
+
+    @Subscribe
+    public void onGameStateChanged(GameStateChanged gameStateChanged)
+    {
+        if (gameStateChanged.getGameState() == GameState.LOGGED_IN)
+        {
+            findLinesInScene();
+        }
+    }
+
     @Override
     protected void startUp() throws Exception
     {
@@ -97,6 +129,7 @@ public class ZoneIndicatorsPlugin extends Plugin
             }
         });
     }
+
     @Override
     protected void shutDown() throws Exception
     {
@@ -105,12 +138,14 @@ public class ZoneIndicatorsPlugin extends Plugin
         multicombatPathToDisplay = null;
         pvpPathToDisplay = null;
     }
+
     private void transformWorldToLocal(float[] coords)
     {
         LocalPoint lp = LocalPoint.fromWorld(client, (int)coords[0], (int)coords[1]);
         coords[0] = lp.getX() - Perspective.LOCAL_TILE_SIZE / 2;
         coords[1] = lp.getY() - Perspective.LOCAL_TILE_SIZE / 2;
     }
+
     private boolean isOpenableAt(WorldPoint wp)
     {
         int sceneX = wp.getX() - client.getBaseX();
@@ -137,6 +172,7 @@ public class ZoneIndicatorsPlugin extends Plugin
         }
         return Arrays.stream(actions).anyMatch(x -> x != null && x.toLowerCase().equals("open"));
     }
+
     private boolean collisionFilter(float[] p1, float[] p2)
     {
         int x1 = (int)p1[0];
@@ -173,8 +209,10 @@ public class ZoneIndicatorsPlugin extends Plugin
         boolean b2 = wa2.canTravelInDirection(client, dy, dx);
         return b1 && b2;
     }
+
     private void findLinesInScene()
     {
+        //System.out.println("finding lines in scene...");
         inDeadman = client.getWorldType().stream().anyMatch(x ->
                 x == WorldType.DEADMAN || x == WorldType.SEASONAL_DEADMAN);
         inPvp = client.getWorldType().stream().anyMatch(x ->
@@ -237,24 +275,5 @@ public class ZoneIndicatorsPlugin extends Plugin
             pvpPathToDisplay[i] = safeZonePath;
         }
     }
-    @Subscribe
-    public void onConfigChanged(ConfigChanged event)
-    {
-        if (event.getKey().equals("collisionDetection") ||
-                event.getKey().equals("multicombatZoneVisibility") ||
-                event.getKey().equals("deadmanSafeZones") ||
-                event.getKey().equals("pvpSafeZones"))
-        {
-            findLinesInScene();
-        }
-    }
 
-    @Subscribe
-    public void onGameStateChanged(GameStateChanged event)
-    {
-        if (event.getGameState() == GameState.LOGGED_IN)
-        {
-            findLinesInScene();
-        }
-    }
 }

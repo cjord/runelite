@@ -59,6 +59,7 @@ public class ZoneIndicatorsOverlay extends Overlay
     {
         return new Color(c.getRed(), c.getGreen(), c.getBlue(), 92);
     }
+
     private void renderPath(Graphics2D graphics, GeneralPath path, Color color)
     {
         LocalPoint playerLp = client.getLocalPlayer().getLocalLocation();
@@ -81,6 +82,7 @@ public class ZoneIndicatorsOverlay extends Overlay
         });
         graphics.draw(path);
     }
+
     @Override
     public Dimension render(Graphics2D graphics)
     {
