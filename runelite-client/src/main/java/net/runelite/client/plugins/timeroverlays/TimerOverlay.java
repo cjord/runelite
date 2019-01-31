@@ -104,13 +104,13 @@ public class TimerOverlay extends Overlay
         {
             int width = image.getWidth();
             int textHeight = graphics.getFontMetrics().getHeight() - graphics.getFontMetrics().getMaxDescent();
-            Point imageLocation = new Point(textLocation.getX() - width / 2 - 1, textLocation.getY() - textHeight / 2 - image.getHeight() / 2 -  20 * textOffset); //fixed a nullptr here
+            Point imageLocation = new Point(textLocation.getX() - width / 2 - 1 - 30, textLocation.getY() - textHeight / 2 - image.getHeight() / 2 -  20 * textOffset); //fixed a nullptr here
 
             if (config.showSprites())
                 OverlayUtil.renderImageLocation(graphics, imageLocation, image);
 
             // move text
-            textLocation = new Point(textLocation.getX() + width / 2, textLocation.getY() -  20 * textOffset);
+            textLocation = new Point(textLocation.getX() + width / 2 - 30, textLocation.getY() -  20 * textOffset);
             OverlayUtil.renderTextLocation(graphics, textLocation, timeText, timer.getTextColor());
         }
     }
