@@ -288,4 +288,5 @@ public class WorldPoint
 	{
 		return ((x >> 6) << 8) | (y >> 6);
 	}
+
 }
