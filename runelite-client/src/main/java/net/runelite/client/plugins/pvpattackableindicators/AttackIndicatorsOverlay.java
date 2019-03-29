@@ -43,6 +43,11 @@ public class AttackIndicatorsOverlay extends Overlay
         AttackIndicatorsConfig.DisplayMode mode = config.displayMode();
         Color displayColor = attackIndicatorsService.getWildernessAttackableColor(actor);
 
+        if (config.hideClan() && actor.isClanMember())
+        {
+            return;
+        }
+
         if (config.hideUnattackable())
         {
             if (WorldType.isPvpWorld(client.getWorldType()) && attackIndicatorsService.getWildernessLevel(actor) == 0)

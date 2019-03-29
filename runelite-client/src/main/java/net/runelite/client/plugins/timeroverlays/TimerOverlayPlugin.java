@@ -125,12 +125,14 @@ public class TimerOverlayPlugin extends Plugin
     @Subscribe
     public void onWidgetHiddenChanged(WidgetHiddenChanged event)
     {
+        /*
         Widget widget = event.getWidget();
         if (WorldType.isPvpWorld(client.getWorldType())
                 && WidgetInfo.TO_GROUP(widget.getId()) == WidgetInfo.PVP_CONTAINER.getGroupId())
         {
             widgetHiddenChangedOnPvpWorld = true;
         }
+        */
     }
 
     @Subscribe

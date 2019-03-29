@@ -60,6 +60,13 @@ public interface AttackIndicatorsConfig extends Config
     default boolean hideUnattackable() { return false; }
 
     @ConfigItem(
+            keyName = "hideClan",
+            name = "Hide clan",
+            description = "Hide all players that are in your clan"
+    )
+    default boolean hideClan() { return true; }
+
+    @ConfigItem(
             keyName = "levelHeight",
             name = "Text height",
             description = "Where the level should be displayed on the player"
