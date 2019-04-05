@@ -34,7 +34,18 @@ public class AttackIndicatorsOverlay extends Overlay
     @Override
     public Dimension render(Graphics2D graphics)
     {
-        attackIndicatorsService.forEachPlayer((player) -> renderPlayerOverlay(graphics, player));
+        int totalClanMembers = attackIndicatorsService.forEachPlayer((player) -> renderPlayerOverlay(graphics, player));
+
+        if (config.showPlayerCount())
+        {
+            int totalPlayers = client.getPlayers().size();
+
+            Point clanCountTextLocation = new Point(10, 200);
+            OverlayUtil.renderTextLocation(graphics, clanCountTextLocation, "Clan members: " + totalClanMembers, Color.GREEN);
+
+            Point nonClanCountTextLocation = new Point(10, 220);
+            OverlayUtil.renderTextLocation(graphics, nonClanCountTextLocation, "Not clan: " + (totalPlayers - totalClanMembers), Color.GREEN);
+        }
         return null;
     }
 

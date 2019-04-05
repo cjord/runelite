@@ -9,6 +9,7 @@ import net.runelite.client.plugins.playerindicators.PlayerIndicatorsConfig;
 
 import javax.inject.Inject;
 import java.awt.*;
+import java.util.EnumSet;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -31,6 +32,14 @@ public class AttackIndicatorsService
         int otherCombatLv = actor.getCombatLevel();
         int wildernessLv = Math.min(getWildernessLevel(localPlayer), getWildernessLevel(actor)); //minimum wildy level for both players
         int combatDifference;
+        EnumSet<WorldType> worldTypes = client.getWorldType();
+
+        if (worldTypes.contains(WorldType.SEASONAL_DEADMAN) || worldTypes.contains(WorldType.DEADMAN_TOURNAMENT) || worldTypes.contains(WorldType.DEADMAN))
+        {
+            if (localCombatLv - otherCombatLv >= 30)
+                return Color.GREEN; // no 30 minute skull
+            return Color.RED;
+        }
 
         if (WorldType.isPvpWorld(client.getWorldType()))
             wildernessLv += 15;
@@ -63,14 +72,22 @@ public class AttackIndicatorsService
         return (actor.getWorldLocation().getY() - 3520) / 8 + 1;
     }
 
-    public void forEachPlayer(Consumer<Player> consumer)
+    public int forEachPlayer(Consumer<Player> consumer)
     {
         final Player localPlayer = client.getLocalPlayer();
+        int clanCount = 0;
 
         for (Player player : client.getPlayers())
         {
             if (player == null)
                 continue;
+
+            if (player.isClanMember())
+            {
+                //if (config.hideClan())
+                    //continue;
+                clanCount++;
+            }
 
             if (config.displayOnlyNearWild() && getWildernessLevel(player) == 0)
             {
@@ -100,5 +117,6 @@ public class AttackIndicatorsService
                 }
             }
         }
+        return clanCount;
     }
 }

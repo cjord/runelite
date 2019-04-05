@@ -60,6 +60,13 @@ public interface AttackIndicatorsConfig extends Config
     default boolean hideUnattackable() { return false; }
 
     @ConfigItem(
+            keyName = "showPlayerCount",
+            name = "Show Player Counts",
+            description = "Display count of clan members and non clan members on screen"
+    )
+    default boolean showPlayerCount() { return true; }
+
+    @ConfigItem(
             keyName = "hideClan",
             name = "Hide clan",
             description = "Hide all players that are in your clan"
