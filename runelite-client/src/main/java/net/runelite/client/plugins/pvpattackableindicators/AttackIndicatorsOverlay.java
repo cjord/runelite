@@ -1,18 +1,23 @@
 package net.runelite.client.plugins.pvpattackableindicators;
 
-import net.runelite.api.Client;
-import net.runelite.api.Player;
+import net.runelite.api.*;
 import net.runelite.api.Point;
-import net.runelite.api.WorldType;
+import net.runelite.api.events.MenuEntryAdded;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.ui.overlay.OverlayUtil;
+import net.runelite.client.util.ColorUtil;
+import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+
+import static net.runelite.api.ClanMemberRank.UNRANKED;
+import static net.runelite.api.MenuAction.*;
 
 @Singleton
 public class AttackIndicatorsOverlay extends Overlay
@@ -48,6 +53,124 @@ public class AttackIndicatorsOverlay extends Overlay
         }
         return null;
     }
+
+    @Subscribe
+    public void onMenuEntryAdded(MenuEntryAdded menuEntryAdded)
+    {
+        MenuEntry[] menuEnt = client.getMenuEntries();
+        System.out.println("MENU ENTRIES:");
+        for (MenuEntry m : menuEnt)
+        {
+            System.out.println("option: " +m.getOption());
+            System.out.println("target: " +m.getTarget());
+        }
+
+        int type = menuEntryAdded.getType();
+
+        if (type >= 2000)
+        {
+            type -= 2000;
+        }
+
+        int identifier = menuEntryAdded.getIdentifier();
+
+        if (type == FOLLOW.getId() || type == TRADE.getId()
+                || type == SPELL_CAST_ON_PLAYER.getId() || type == ITEM_USE_ON_PLAYER.getId()
+                || type == PLAYER_FIRST_OPTION.getId()
+                || type == PLAYER_SECOND_OPTION.getId()
+                || type == PLAYER_THIRD_OPTION.getId()
+                || type == PLAYER_FOURTH_OPTION.getId()
+                || type == PLAYER_FIFTH_OPTION.getId()
+                || type == PLAYER_SIXTH_OPTION.getId()
+                || type == PLAYER_SEVENTH_OPTION.getId()
+                || type == PLAYER_EIGTH_OPTION.getId()
+                || type == RUNELITE.getId())
+        {
+            final Player localPlayer = client.getLocalPlayer();
+            Player[] players = client.getCachedPlayers();
+            Player player = null;
+
+            if (identifier >= 0 && identifier < players.length)
+            {
+                player = players[identifier];
+            }
+
+            if (player == null)
+            {
+                return;
+            }
+
+            if (config.swapClanAttackMenuEntry())
+            {
+                MenuEntry[] menuEntries = client.getMenuEntries();
+
+                MenuEntry lastEntry = menuEntries[menuEntries.length - 1];
+
+                if (true) {
+                    // strip out existing <col...
+                    String target = lastEntry.getTarget();
+                    int idx = target.indexOf('>');
+                    if (idx != -1) {
+                        target = target.substring(idx + 1);
+                    }
+
+                    //lastEntry.setTarget(ColorUtil.prependColorTag(target, color));
+                }
+
+                for (MenuEntry m : menuEntries)
+                {
+                    System.out.println(m.toString());
+                }
+                client.setMenuEntries(menuEntries);
+            }
+        }
+    }
+
+    private void swap(String optionA, String optionB, String target, boolean strict)
+    {
+        MenuEntry[] entries = client.getMenuEntries();
+
+        int idxA = searchIndex(entries, optionA, target, strict);
+        int idxB = searchIndex(entries, optionB, target, strict);
+
+        if (idxA >= 0 && idxB >= 0)
+        {
+            MenuEntry entry = entries[idxA];
+            entries[idxA] = entries[idxB];
+            entries[idxB] = entry;
+
+            client.setMenuEntries(entries);
+        }
+    }
+
+    private int searchIndex(MenuEntry[] entries, String option, String target, boolean strict)
+    {
+        for (int i = entries.length - 1; i >= 0; i--)
+        {
+            MenuEntry entry = entries[i];
+            String entryOption = Text.removeTags(entry.getOption()).toLowerCase();
+            String entryTarget = Text.removeTags(entry.getTarget()).toLowerCase();
+
+            if (strict)
+            {
+                if (entryOption.equals(option) && entryTarget.equals(target))
+                {
+                    return i;
+                }
+            }
+            else
+            {
+                if (entryOption.contains(option.toLowerCase()) && entryTarget.equals(target))
+                {
+                    return i;
+                }
+            }
+        }
+
+        return -1;
+    }
+
+
 
     private void renderPlayerOverlay(Graphics2D graphics, Player actor) //todo integration with playerindicators plugin
     {

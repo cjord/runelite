@@ -35,10 +35,11 @@ public class AttackIndicatorsService
         EnumSet<WorldType> worldTypes = client.getWorldType();
 
         if (worldTypes.contains(WorldType.SEASONAL_DEADMAN) || worldTypes.contains(WorldType.DEADMAN_TOURNAMENT) || worldTypes.contains(WorldType.DEADMAN))
+            //set worldtypes on login instead of checking every time
         {
             if (localCombatLv - otherCombatLv >= 30)
-                return Color.GREEN; // no 30 minute skull
-            return Color.RED;
+                return Color.RED; // no 30 minute skull
+            return Color.GREEN;
         }
 
         if (WorldType.isPvpWorld(client.getWorldType()))

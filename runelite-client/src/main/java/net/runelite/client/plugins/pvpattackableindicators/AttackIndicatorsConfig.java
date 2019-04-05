@@ -74,6 +74,13 @@ public interface AttackIndicatorsConfig extends Config
     default boolean hideClan() { return true; }
 
     @ConfigItem(
+            keyName = "swapClanAttackMenuEntry",
+            name = "Swap Clan Attack Option",
+            description = "Prevents attack option for clan members from being left click"
+    )
+    default boolean swapClanAttackMenuEntry() { return true; }
+
+    @ConfigItem(
             keyName = "levelHeight",
             name = "Text height",
             description = "Where the level should be displayed on the player"
