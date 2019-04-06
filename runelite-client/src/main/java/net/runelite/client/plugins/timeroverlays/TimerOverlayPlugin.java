@@ -248,7 +248,7 @@ public class TimerOverlayPlugin extends Plugin
         if (event.getActor() instanceof Player)
         {
             Player player = (Player) event.getActor();
-            System.out.println("Player event " + player.getName() + " id:" + player.getGraphic());
+            //System.out.println("Player event " + player.getName() + " id:" + player.getGraphic());
         
             if (config.showVengeance() && player.getGraphic() == VENGEANCE.getGraphicId())
             {
@@ -340,7 +340,7 @@ public class TimerOverlayPlugin extends Plugin
         else if (event.getActor() instanceof NPC)
         {
             NPC npc = (NPC) event.getActor();
-            System.out.println("NPC event " + npc.getName() + " id:" +npc.getGraphic());
+            //System.out.println("NPC event " + npc.getName() + " id:" +npc.getGraphic());
             
             if (config.showFreezes())
             {

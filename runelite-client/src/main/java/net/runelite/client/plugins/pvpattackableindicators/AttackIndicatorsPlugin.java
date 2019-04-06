@@ -81,7 +81,6 @@ public class AttackIndicatorsPlugin extends Plugin
                 || type == PLAYER_EIGTH_OPTION.getId()
                 || type == RUNELITE.getId())
         {
-            final Player localPlayer = client.getLocalPlayer();
             Player[] players = client.getCachedPlayers();
             Player player = null;
 
