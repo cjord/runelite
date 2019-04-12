@@ -4,6 +4,8 @@ import com.google.inject.Provides;
 import net.runelite.api.Client;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.Player;
+import net.runelite.api.events.GameTick;
+import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -55,7 +57,6 @@ public class AttackIndicatorsPlugin extends Plugin
     {
         overlayManager.remove(overlay);
     }
-
 
     @Subscribe
     public void onMenuEntryAdded(MenuEntryAdded menuEntryAdded)

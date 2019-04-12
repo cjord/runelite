@@ -96,6 +96,7 @@ public class IdleNotifierPlugin extends Plugin
 	private Instant sixHourWarningTime;
 	private boolean ready;
 	private boolean lastInteractWasCombat;
+	private long lastHitpointNotification = System.currentTimeMillis();
 
 	@Provides
 	IdleNotifierConfig provideConfig(ConfigManager configManager)
@@ -463,15 +464,11 @@ public class IdleNotifierPlugin extends Plugin
 		{
 			if (client.getBoostedSkillLevel(Skill.HITPOINTS) + client.getVar(Varbits.NMZ_ABSORPTION) <= config.getHitpointsThreshold())
 			{
-				if (!notifyHitpoints)
+				if (System.currentTimeMillis() - lastHitpointNotification > 10000) // notify every 10 seconds while low HP
 				{
-					notifyHitpoints = true;
+					lastHitpointNotification = System.currentTimeMillis();
 					return true;
 				}
-			}
-			else
-			{
-				notifyHitpoints = false;
 			}
 		}
 
