@@ -9,6 +9,7 @@ import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.idlenotifier.IdleNotifierConfig;
 
 import javax.inject.Inject;
@@ -17,6 +18,12 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 
+
+@PluginDescriptor(
+        name = "Combat AFK Notifications",
+        description = "Improved notifications and alerts for AFKing combat",
+        tags = {"combat", "minigame", "nmz", "prayer", "pve", "pvm", "afk", "alert", "notification", "notify"}
+)
 public class CombatAlerterPlugin extends Plugin
 {
     @Inject
@@ -28,18 +35,14 @@ public class CombatAlerterPlugin extends Plugin
     @Inject
     private CombatAlerterConfig config;
 
-    @Inject
-    private IdleNotifierConfig idleConfig;
-
-
     private Instant lastTime;
 
     private long lastHitpointNotification = 0;
     private long lastAbsorptionNotification = 0;
-    private long lastPrayerNotification= 0;
+    private long lastPrayerNotification = 0;
     private long lastCombatNotification = 0;
 
-    private Instant lastCombatTime;
+    private Instant lastCombatTime = Instant.now();
 
     @Provides
     CombatAlerterConfig provideConfig(ConfigManager configManager)
@@ -108,13 +111,14 @@ public class CombatAlerterPlugin extends Plugin
 
         if (interactingWith == null)
         {
-            final Duration delayTime = Duration.ofMillis(1000); //todo config
+            final Duration delayTime = Duration.ofMillis(5000); //todo config
 
             if (Instant.now().compareTo(lastCombatTime.plus(delayTime)) >= 0)
             {
                 if (System.currentTimeMillis() - lastCombatNotification > config.alertFrequency() * 1000)
                 {
                     lastCombatNotification = System.currentTimeMillis();
+                    //todo counter for notifications, stop after a few
                     return "[" + localPlayer.getName() + "] is out of combat!\n";
                 }
             }
@@ -160,7 +164,7 @@ public class CombatAlerterPlugin extends Plugin
         return "";
     }
 
-    private String checkLowAbsorption(Player localPlayer)
+    private String checkLowAbsorption(Player localPlayer) //todo check if in nmz
     {
         if (config.notifyAbsorptionValue() == 0)
         {

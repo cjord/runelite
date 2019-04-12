@@ -62,12 +62,6 @@ public class Timer extends InfoBox
 	}
 
 	@Override
-	public String toString()
-	{
-		return "Timer{" + "startTime=" + startTime + ", endTime=" + endTime + ", duration=" + duration + '}';
-	}
-
-	@Override
 	public String getText()
 	{
 		Duration timeLeft = Duration.between(Instant.now(), endTime);

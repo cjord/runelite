@@ -9,6 +9,7 @@ import net.runelite.client.config.ConfigItem;
 @ConfigGroup("combatalerter")
 public interface CombatAlerterConfig extends Config
 {
+    /*
     @ConfigItem(
             keyName = "focusOnAlert",
             name = "Focus on Alert ",
@@ -19,15 +20,6 @@ public interface CombatAlerterConfig extends Config
         return false;
     }
 
-    @ConfigItem(
-            keyName = "notifyOutOfCombat",
-            name = "Play Sound on Combat End",
-            description = "Plays a jingle when out of combat for the set Alert Time"
-    )
-    default boolean notifyOutOfCombat()
-    {
-        return true;
-    }
 
     @ConfigItem(
             keyName = "playSoundOnCombatEnd",
@@ -48,11 +40,24 @@ public interface CombatAlerterConfig extends Config
     {
         return 10;
     }
+    */
+
+    @ConfigItem(
+            keyName = "notifyOutOfCombat",
+            name = "Notify out of Combat",
+            description = "Toggles notifications for when combat ends and you are out of combat",
+            position = 0
+    )
+    default boolean notifyOutOfCombat()
+    {
+        return true;
+    }
 
     @ConfigItem(
             keyName = "notifyHitpointsValue",
             name = "HP Value",
-            description = "Notify if HP is less than this value. 0 to disable"
+            description = "Notify if HP is less than this value. 0 to disable",
+            position = 1
     )
     default int notifyHitpointsValue()
     {
@@ -60,10 +65,11 @@ public interface CombatAlerterConfig extends Config
     }
 
     @ConfigItem(
-        keyName = "NMZHitpointsToggle",
-        name = "NMZ HP Toggle",
-        description = "Changes HP notifications to be for above the HP Value instead of below."
-)
+            keyName = "NMZHitpointsToggle",
+            name = "NMZ HP Toggle",
+            description = "Changes HP notifications to be for above the HP Value instead of below.",
+            position = 2
+    )
     default boolean NMZHitpointsToggle()
     {
         return false;
@@ -72,7 +78,8 @@ public interface CombatAlerterConfig extends Config
     @ConfigItem(
             keyName = "notifyAbsorptionValue",
             name = "Absorption Value",
-            description = "Notify if absorption is less than this value. 0 to disable"
+            description = "Notify if absorption is less than this value. 0 to disable",
+            position = 3
     )
     default int notifyAbsorptionValue()
     {
@@ -82,7 +89,8 @@ public interface CombatAlerterConfig extends Config
     @ConfigItem(
             keyName = "notifyPrayerValue",
             name = "Prayer Value",
-            description = "Notify if prayer is less than this value. 0 to disable"
+            description = "Notify if prayer is less than this value. 0 to disable",
+            position = 4
     )
     default int notifyPrayerValue()
     {
@@ -92,7 +100,8 @@ public interface CombatAlerterConfig extends Config
     @ConfigItem(
             keyName = "alertFrequency",
             name = "Alert Frequency",
-            description = "How many seconds before alerts of the same type repeat. 0 to disable"
+            description = "How many seconds before alerts of the same type repeat. 0 to disable",
+            position = 5
     )
     default int alertFrequency()
     {

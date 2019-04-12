@@ -96,7 +96,6 @@ public class IdleNotifierPlugin extends Plugin
 	private Instant sixHourWarningTime;
 	private boolean ready;
 	private boolean lastInteractWasCombat;
-	private long lastHitpointNotification = System.currentTimeMillis();
 
 	@Provides
 	IdleNotifierConfig provideConfig(ConfigManager configManager)
@@ -206,6 +205,9 @@ public class IdleNotifierPlugin extends Plugin
 			case MAGIC_LUNAR_STRING_JEWELRY:
 			case MAGIC_MAKE_TABLET:
 			case MAGIC_ENCHANTING_JEWELRY:
+			case MAGIC_ENCHANTING_AMULET_1:
+			case MAGIC_ENCHANTING_AMULET_2:
+			case MAGIC_ENCHANTING_AMULET_3:
 			/* Prayer */
 			case USING_GILDED_ALTAR:
 			/* Farming */
@@ -464,11 +466,15 @@ public class IdleNotifierPlugin extends Plugin
 		{
 			if (client.getBoostedSkillLevel(Skill.HITPOINTS) + client.getVar(Varbits.NMZ_ABSORPTION) <= config.getHitpointsThreshold())
 			{
-				if (System.currentTimeMillis() - lastHitpointNotification > 10000) // notify every 10 seconds while low HP
+				if (!notifyHitpoints)
 				{
-					lastHitpointNotification = System.currentTimeMillis();
+					notifyHitpoints = true;
 					return true;
 				}
+			}
+			else
+			{
+				notifyHitpoints = false;
 			}
 		}
 
